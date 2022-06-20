@@ -226,7 +226,6 @@
                           </div> -->
 
                       </div>
-                      <!-- ---------- -->
                       <div class="empty">
                           <div class="alert alert-success alert-dismissable">
                               <i class="icon-info-sign"></i>
