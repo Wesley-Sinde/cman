@@ -36,41 +36,95 @@
                       </div>
                   </div>
               </div>
+
+              <?php
+                $con = mysqli_connect("localhost", "root", "", "cman");
+                // Check connection
+                if (mysqli_connect_errno()) {
+                    echo "Failed to connect to MySQL: " . mysqli_connect_error();
+                }
+
+                $sql = "SELECT * FROM sportreserve where eventId='$eventId' and na='$session_id'";
+
+                if ($result = mysqli_query($con, $sql)) {
+                    $rowcount = mysqli_num_rows($result);
+                    $slotsRamining = 5 - $rowcount;
+                }
+                mysqli_close($con);
+                ?>
               <div class="block-content collapse in">
                   <div class="span12">
-                      <style>
-                          .svg:hover {
-                              fill: blue;
-                              color: blue;
-                          }
-
-                          .svg {
-                              fill: rgb(100, 254, 0);
-                              font-size: 2;
-                              color: rgb(100, 254, 0);
-                          }
-
-                          .svgr:hover {
-                              fill: red;
-                              color: red;
-                          }
-
-                          .svgr {
-                              fill: blue;
-                              color: blue;
-                          }
-                      </style>
                       <?php
-                        $x = 1;
-                        while ($x <= $ssum) {
-                        ?>
-                          <svg style="width: 40; " class="w-6 h-6 svgr" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                          </svg>
-                      <?php
-                            $x++;
-                        }
-                        ?>
+                        if ($slotsRamining <= 0) { ?>
+                          <style>
+                              .svg:hover {
+                                  fill: blue;
+                                  color: blue;
+                              }
+
+                              .svg {
+                                  fill: #000066;
+                                  font-size: 2;
+                                  color: #000066;
+
+                              }
+
+                              .svgr:hover {
+                                  fill: red;
+                                  color: red;
+                              }
+
+                              .svgr {
+                                  fill: blue;
+                                  color: blue;
+                              }
+                          </style>
+                      <?php } else { ?>
+                          <style>
+                              .svg:hover {
+                                  fill: blue;
+                                  color: blue;
+                              }
+
+                              .svg {
+                                  fill: #00cc66;
+                                  font-size: 2;
+                                  color: #00cc66;
+
+                              }
+
+                              .svgr:hover {
+                                  fill: red;
+                                  color: red;
+                              }
+
+                              .svgr {
+                                  fill: blue;
+                                  color: blue;
+                              }
+                          </style>
+                      <?php } ?>
+                      <div>
+                          <?php
+                            $x = 1;
+                            $Seats = 1;
+                            while ($x <= $ssum) {
+                            ?>
+                              <span style="position: absolute; padding-top:20px; padding-left:15px;  font-weight: bolder; color:white">
+
+                                  <?php
+                                    echo $Seats;
+                                    $x++;
+                                    $Seats += 1;
+                                    ?>
+                              </span>
+                              <svg style="width: 40; " class="w-6 h-6 svgr" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                              </svg>
+                          <?php
+                            }
+                            ?>
+                      </div>
 
                       <div class="empty">
                           <div class="alert alert-success alert-dismissable">
@@ -82,7 +136,7 @@
                                     echo '0';
                                 }
                                 ?>
-                              Click a slot to Reserve it
+                              You have <?php echo $slotsRamining  ?> slots remaining to reserve
                           </div>
                       </div>
                       <div class="row-fluid">
@@ -92,7 +146,17 @@
                             ?>
                               <form method="post" class="span2">
                                   <input name="slots" type="hidden" value="1" id="slots" placeholder="Enter Total Of The Sports You Want To Reserve...">
-                                  <button type="submit" id="submit" name="send" class="btn btn-primary btn-lg flex block ">
+                                  <button <?php if ($slotsRamining <= 0) {
+                                                echo "disabled";
+                                            }; ?> type="submit" id="submit" name="send" class="btn btn-primary btn-lg flex block svg">
+                                      <span style="position: absolute; padding-top:20px; padding-left:15px;  font-weight: bolder; color:white">
+
+                                          <?php
+                                            echo $Seats;
+                                            $x++;
+                                            $Seats += 1;
+                                            ?>
+                                      </span>
                                       <svg style="width: 40; " class="w-6 h-6 svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                       </svg>
@@ -100,9 +164,11 @@
                               </form>
                           <?php
                                 $x++;
+                                $Seats += 1;
                             }
                             ?>
                       </div>
+
 
                       <!-- <form method="post">
                           <div class="control-group">
