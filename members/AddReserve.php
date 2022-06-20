@@ -1,9 +1,6 @@
   <?php
     @$eventId = $_GET['eventId'];
     if ($eventId != '') {
-        $sresult = mysqli_query($conn, "SELECT SUM(slots) AS slots FROM sportreserve where eventId='$eventId'");
-        $srow = mysqli_fetch_assoc($sresult);
-        $ssum = $srow['slots'];
 
 
         $selEventData = $conn1->query("SELECT * FROM slotsreserved WHERE eventId='$eventId ' ");
@@ -12,8 +9,87 @@
             $Totseats = $selslotsRow['slots'];
             $eventDate = $selslotsRow['eventDate'];
         }
-        $seats = $Totseats - $ssum;
     ?>
+
+      <?php
+
+        if (isset($_POST['send'])) {
+
+            //add formsend delete
+            $formreceived = $_POST['formsend'];
+            if ($formreceived == 'add') {
+
+
+                $slots = $_POST['slots'];
+                $insData = $conn->query("INSERT into  sportreserve  (slots, na, eventId,eventDate) VALUES ('$slots','$session_id','$eventId','$eventDate')");
+                //mysqli_query($conn, "insert into sportreserve (slots,na) values('$slots','$session_id')") or die(mysqli_error());
+                if ($insData) {
+                    echo ('Reserve added');
+        ?>
+                  <script>
+                      window.location = "myReserve.php";
+                      $.jGrowl("The Reserve Successfully added", {
+                          header: 'Reserve added'
+                      });
+                  </script>
+              <?php
+                } else {
+                    echo ('failed');
+                ?>
+                  <script>
+                      window.location = "myReserve.php";
+                      $.jGrowl("The Reserve failed to be added", {
+                          header: 'Reserve save failed'
+                      });
+                  </script>
+              <?php
+                }
+                ?>
+              <?php
+            } else {
+                $slots = $_POST['slots'];
+                $insData = $conn->query("DELETE FROM `sportreserve` WHERE `sportreserve`.`na` = '$session_id' and eventId='$eventId'");
+
+                // $insData = $conn->query("INSERT into  sportreserve  (slots, na, eventId,eventDate) VALUES ('$slots','$session_id','$eventId','$eventDate')");
+                // //mysqli_query($conn, "insert into sportreserve (slots,na) values('$slots','$session_id')") or die(mysqli_error());
+                if ($insData) {
+                    echo ('Reserve deleted');
+                ?>
+                  <script>
+                      //   window.location = "myReserve.php";
+                      $.jGrowl("The Reserve Successfully deleted", {
+                          header: 'Reserve deleted'
+                      });
+                  </script>
+              <?php
+                } else {
+                    echo ('failed');
+                ?>
+                  <script>
+                      //   window.location = "myReserve.php";
+                      $.jGrowl("The Reserve failed to be deleted", {
+                          header: 'Reserve deleted failed'
+                      });
+                  </script>
+              <?php
+                }
+                ?>
+      <?php
+            }
+        }
+
+
+
+
+
+        $sresult = mysqli_query($conn, "SELECT SUM(slots) AS slots FROM sportreserve where eventId='$eventId'");
+        $srow = mysqli_fetch_assoc($sresult);
+        $ssum = $srow['slots'];
+        $seats = $Totseats - $ssum;
+        ?>
+
+
+
 
 
       <div class="row-fluid">
@@ -32,7 +108,7 @@
                           <?php echo $ssum;
                             if ($ssum === null) {
                                 echo '0';
-                            } ?>
+                            } ?> <span style="color: red;"> To delete your slots click on any of the buttons below.</span>
                       </div>
                   </div>
               </div>
@@ -109,23 +185,48 @@
                             $x = 1;
                             $Seats = 1;
                             while ($x <= $ssum) {
-                            ?>
-                              <span style="position: absolute; padding-top:20px; padding-left:15px;  font-weight: bolder; color:white">
+                            ?> <form method="post" class="span2">
+                                  <input name="slots" type="hidden" value="1" id="slots">
+                                  <input name="formsend" type="hidden" value="delete" id="slots">
+                                  <button <?php if ($slotsRamining < 0) {
+                                                echo "disabled";
+                                            }; ?> type="submit" id="submit" name="send" class="btn btn-primary btn-lg flex block svgr">
 
-                                  <?php
-                                    echo $Seats;
-                                    $x++;
-                                    $Seats += 1;
-                                    ?>
-                              </span>
-                              <svg style="width: 40; " class="w-6 h-6 svgr" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                              </svg>
+                                      <span style="position: absolute; padding-top:20px; padding-left:15px;  font-weight: bolder; color:white">
+
+                                          <?php
+                                            echo $Seats;
+                                            $x++;
+                                            $Seats += 1;
+                                            ?>
+                                      </span>
+                                      <svg style="width: 40; " class="w-6 h-6 svgr" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                      </svg>
+
+                                  </button>
+                              </form>
                           <?php
                             }
                             ?>
                       </div>
+                      <div class="row-fluid">
+                          <!-- <div class="empty">
+                              <div class="alert alert-success alert-dismissable">
+                                  <i class="icon-info-sign"></i>
+                                  <strong>Note!:</strong>
+                                  Spot remaining:
+                                  <?php echo $seats;
+                                    if ($seats === null) {
+                                        echo '0';
+                                    }
+                                    ?>
+                                  You have <?php echo $slotsRamining  ?> slots remaining to reserve
+                              </div>
+                          </div> -->
 
+                      </div>
+                      <!-- ---------- -->
                       <div class="empty">
                           <div class="alert alert-success alert-dismissable">
                               <i class="icon-info-sign"></i>
@@ -136,7 +237,7 @@
                                     echo '0';
                                 }
                                 ?>
-                              You have <?php echo $slotsRamining  ?> slots remaining to reserve
+                              <span style="color: red;"> You have <?php echo $slotsRamining  ?> slots remaining to reserve</span>
                           </div>
                       </div>
                       <div class="row-fluid">
@@ -145,7 +246,8 @@
                             while ($x <= $seats) {
                             ?>
                               <form method="post" class="span2">
-                                  <input name="slots" type="hidden" value="1" id="slots" placeholder="Enter Total Of The Sports You Want To Reserve...">
+                                  <input name="slots" type="hidden" value="1" id="slots">
+                                  <input name="formsend" type="hidden" value="add" id="slots">
                                   <button <?php if ($slotsRamining <= 0) {
                                                 echo "disabled";
                                             }; ?> type="submit" id="submit" name="send" class="btn btn-primary btn-lg flex block svg">
@@ -201,38 +303,7 @@
           </div>
           <!-- /block -->
       </div>
-      <?php
 
-        if (isset($_POST['send'])) {
-            $slots = $_POST['slots'];
-            $insData = $conn->query("INSERT into  sportreserve  (slots, na, eventId,eventDate) VALUES ('$slots','$session_id','$eventId','$eventDate')");
-            //mysqli_query($conn, "insert into sportreserve (slots,na) values('$slots','$session_id')") or die(mysqli_error());
-            if ($insData) {
-                echo ('Reserve added');
-        ?>
-              <script>
-                  window.location = "myReserve.php";
-                  $.jGrowl("The Reserve Successfully added", {
-                      header: 'Reserve added'
-                  });
-              </script>
-          <?php
-            } else {
-                echo ('failed');
-            ?>
-              <script>
-                  window.location = "myReserve.php";
-                  $.jGrowl("The Reserve failed to be added", {
-                      header: 'Reserve save failed'
-                  });
-              </script>
-          <?php
-            }
-            ?>
-      <?php
-        }
-
-        ?>
       </script>
       <script>
           function checkSlots() {

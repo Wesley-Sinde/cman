@@ -43,6 +43,7 @@
                   <thead>
                     <tr>
                       <th>Event Name</th>
+                      <th> &#160 By &#160</th>
                       <th> &#160 Slots &#160</th>
                       <th style="margin-right:16; margin-left:8; padding-left:16"> Date Booked</th>
                     </tr>
@@ -67,6 +68,9 @@
                           ?>
                           <span class="card-text"><?php echo $singleRow['2']; ?> </span><br>
 
+                        </td>
+                        <td style="text-align: center;">
+                          <?php echo $row['fname'] . ' &#160' . $row['sname']; ?>
                         </td>
                         <td style="text-align: center;"><?php echo $row['slots'];
                                                         $total += 1; ?></td>
