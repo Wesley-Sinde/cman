@@ -1,6 +1,18 @@
 <?php
-error_reporting(0);
- $db = mysqli_select_db('cman',@mysqli_connect('localhost','root','')); ?>
+//error_reporting(0);
+ //$db = mysqli_select_db('cman',@mysqli_connect('localhost','root','')); 
+
+
+$host="localhost";
+		$uname="root";
+		$pas="";
+		$db_name="cman";
+		$tbl_name="members";
+		
+		$conn = mysqli_connect("$host","$uname","$pas") or die ("cannot connect");
+		mysqli_select_db($conn,"$db_name") or die ("cannot select db");
+
+?>
 <?php
 if (isset($_POST['submit'])){
 $fname = $_POST['fname'];
